@@ -2,13 +2,17 @@ package br.com.alura.ceep.ui.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -29,7 +33,12 @@ public class ListaNotasActivity extends AppCompatActivity {
 
 
     public static final String TITULO_APPBAR = "Notas";
+    private static final String MODO_LAYOUT = "MODO_LAYOUT";
+    private static final String LINEAR_LAYOUT = "LINEAR_LAYOUT";
+    private static final String GRADLE_LAYOUT = "GRADLE_LAYOUT";
     private ListaNotasAdapter adapter;
+    private SharedPreferences sharedPreferences;
+    private RecyclerView listaNotas;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +50,7 @@ public class ListaNotasActivity extends AppCompatActivity {
         List<Nota> todasNotas = pegaTodasNotas();
         configuraRecyclerView(todasNotas);
         configuraBotaoInsereNota();
+        getLayout();
     }
 
     private void configuraBotaoInsereNota() {
@@ -130,7 +140,7 @@ public class ListaNotasActivity extends AppCompatActivity {
     }
 
     private void configuraRecyclerView(List<Nota> todasNotas) {
-        RecyclerView listaNotas = findViewById(R.id.lista_notas_recyclerview);
+        listaNotas = findViewById(R.id.lista_notas_recyclerview);
         configuraAdapter(todasNotas, listaNotas);
         configuraItemTouchHelper(listaNotas);
     }
@@ -160,4 +170,72 @@ public class ListaNotasActivity extends AppCompatActivity {
         startActivityForResult(abreFormularioComNota, CODIGO_REQUISICAO_ALTERA_NOTA);
     }
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_lista_nota, menu);
+        initializeLayout(getLayout(),menu.getItem(0));
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(ehMenuLayout(item)){
+            changeLayout(item);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private boolean ehMenuLayout(MenuItem item) {
+        return item.getItemId() == R.id.menu_lista_nota_ic_layout;
+    }
+
+    private String getLayout(){
+
+        sharedPreferences = getSharedPreferences(MODO_LAYOUT, this.MODE_PRIVATE);
+        String result = sharedPreferences.getString(MODO_LAYOUT, LINEAR_LAYOUT);
+        return result;
+
+    }
+
+    private void setLayout(String layout){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(MODO_LAYOUT, layout);
+        editor.apply();
+    }
+
+    private void changeLayout( MenuItem menuItem){
+        String layout = getLayout();
+        if(layout.equals(LINEAR_LAYOUT)){
+            menuItem.setIcon(R.drawable.ic_grade_layout);
+            setLayout(GRADLE_LAYOUT);
+            trocaLayoutParaGridAdapter();
+        }else{
+            menuItem.setIcon(R.drawable.ic_linear_layout);
+            setLayout(LINEAR_LAYOUT);
+            trocaLayoutParaLinearAdapter();
+        }
+    }
+
+    private void trocaLayoutParaGridAdapter() {
+        listaNotas.setAdapter(null); // clear recycler view before tampering with its layout manager
+        listaNotas.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)); // set appropriate layout manager
+        listaNotas.setAdapter(adapter);
+    }
+
+    private void trocaLayoutParaLinearAdapter() {
+        listaNotas.setAdapter(null); // clear recycler view before tampering with its layout manager
+        listaNotas.setLayoutManager(new LinearLayoutManager(this)); // set appropriate layout manager
+        listaNotas.setAdapter(adapter);
+    }
+
+    private void initializeLayout(String layout, MenuItem menuItem){
+        if(layout.equals(LINEAR_LAYOUT)){
+            menuItem.setIcon(R.drawable.ic_linear_layout);
+            trocaLayoutParaLinearAdapter();
+        }else{
+            menuItem.setIcon(R.drawable.ic_grade_layout);
+            trocaLayoutParaGridAdapter();
+        }
+    }
 }
