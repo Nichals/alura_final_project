@@ -5,10 +5,12 @@
 >
 
     <LinearLayout
+        android:id="@+id/color_item_shape"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_margin="10dp"
-        android:background="@drawable/circulo_color_picker"/>
+        android:background="@drawable/circulo_color_picker"
+        android:orientation="horizontal" />
 
 
 </LinearLayout>

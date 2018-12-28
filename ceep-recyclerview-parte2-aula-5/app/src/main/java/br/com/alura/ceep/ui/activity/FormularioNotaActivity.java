@@ -5,15 +5,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
 
-import java.io.Serializable;
-
 import br.com.alura.ceep.R;
+import br.com.alura.ceep.model.Cor;
 import br.com.alura.ceep.model.Nota;
 
 import static br.com.alura.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOTA;
@@ -28,6 +27,8 @@ public class FormularioNotaActivity extends AppCompatActivity {
     private int posicaoRecibida = POSICAO_INVALIDA;
     private TextView titulo;
     private TextView descricao;
+    private RecyclerView colorPickList;
+    private Cor cor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +46,7 @@ public class FormularioNotaActivity extends AppCompatActivity {
             posicaoRecibida = dadosRecebidos.getIntExtra(CHAVE_POSICAO, POSICAO_INVALIDA);
             preencheCampos(notaRecebida);
         }
+
     }
 
     private void preencheCampos(Nota notaRecebida) {
@@ -55,6 +57,9 @@ public class FormularioNotaActivity extends AppCompatActivity {
     private void inicializaCampos() {
         titulo = findViewById(R.id.formulario_nota_titulo);
         descricao = findViewById(R.id.formulario_nota_descricao);
+        cor = new Cor();
+        colorPickList = findViewById(R.id.formulario_colorpicker_recyclerview);
+
     }
 
     @Override
@@ -82,11 +87,21 @@ public class FormularioNotaActivity extends AppCompatActivity {
 
     @NonNull
     private Nota criaNota() {
-        return new Nota(titulo.getText().toString(),
-                descricao.getText().toString());
+        if(cor != null){
+            return new Nota(titulo.getText().toString(),
+                    descricao.getText().toString(), cor.getCor());
+        }else{
+            return new Nota(titulo.getText().toString(),
+                    descricao.getText().toString());
+        }
+
     }
 
     private boolean ehMenuSalvaNota(MenuItem item) {
         return item.getItemId() == R.id.menu_formulario_nota_ic_salva;
+    }
+
+    public void selecionaCor(Cor cor){
+        this.cor = cor;
     }
 }

@@ -4,4 +4,5 @@
     <color name="colorPrimaryDark">#c66900</color>
     <color name="colorAccent">#000000</color>
     <color name="backgroundColorPicker">#eeeeee</color>
+    <color name="whiteColorPicker">#ffffff</color>
 </resources>

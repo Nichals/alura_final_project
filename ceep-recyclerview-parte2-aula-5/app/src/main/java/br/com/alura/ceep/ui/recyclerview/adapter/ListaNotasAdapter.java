@@ -72,6 +72,7 @@ public class ListaNotasAdapter extends RecyclerView.Adapter<ListaNotasAdapter.No
 
         public NotaViewHolder(View itemView) {
             super(itemView);
+
             titulo = itemView.findViewById(R.id.item_nota_titulo);
             descricao = itemView.findViewById(R.id.item_nota_descricao);
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -90,6 +91,7 @@ public class ListaNotasAdapter extends RecyclerView.Adapter<ListaNotasAdapter.No
         private void preencheCampo(Nota nota) {
             titulo.setText(nota.getTitulo());
             descricao.setText(nota.getDescricao());
+            itemView.setBackgroundColor(itemView.getResources().getColor(nota.getCorFundo()));
         }
     }
 
