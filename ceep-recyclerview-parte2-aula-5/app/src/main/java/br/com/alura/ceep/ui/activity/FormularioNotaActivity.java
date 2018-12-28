@@ -4,16 +4,24 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import br.com.alura.ceep.R;
 import br.com.alura.ceep.model.Cor;
 import br.com.alura.ceep.model.Nota;
+import br.com.alura.ceep.ui.recyclerview.adapter.ListaCorAdapter;
+import br.com.alura.ceep.ui.recyclerview.adapter.listener.ListaCorListener;
 
 import static br.com.alura.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOTA;
 import static br.com.alura.ceep.ui.activity.NotaActivityConstantes.CHAVE_POSICAO;
@@ -28,7 +36,9 @@ public class FormularioNotaActivity extends AppCompatActivity {
     private TextView titulo;
     private TextView descricao;
     private RecyclerView colorPickList;
-    private Cor cor;
+    public static Cor cor;
+    private List<Cor> listaCor;
+    private ConstraintLayout layout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +47,7 @@ public class FormularioNotaActivity extends AppCompatActivity {
 
         setTitle(TITULO_APPBAR_INSERE);
         inicializaCampos();
+        inicializaCor();
 
         Intent dadosRecebidos = getIntent();
         if(dadosRecebidos.hasExtra(CHAVE_NOTA)){
@@ -44,21 +55,56 @@ public class FormularioNotaActivity extends AppCompatActivity {
             Nota notaRecebida = (Nota) dadosRecebidos
                     .getSerializableExtra(CHAVE_NOTA);
             posicaoRecibida = dadosRecebidos.getIntExtra(CHAVE_POSICAO, POSICAO_INVALIDA);
+            cor = new Cor(notaRecebida.getCorFundo());
             preencheCampos(notaRecebida);
         }
 
     }
 
+    private void inicializaCor() {
+        Cor corBranca = new Cor(R.color.whiteColorPicker);
+        listaCor.add(corBranca);
+        Cor corAzul = new Cor(R.color.blueColorPicker);
+        listaCor.add(corAzul);
+        Cor corVermelho = new Cor(R.color.redColorPicker);
+        listaCor.add(corVermelho);
+        Cor corVerde = new Cor(R.color.greenColorPicker );
+        listaCor.add(corVerde);
+        Cor corAmarelo = new Cor(R.color.yellowColorPicker);
+        listaCor.add(corAmarelo);
+        Cor corLilas = new Cor(R.color.pinkColorPicker);
+        listaCor.add(corLilas);
+        Cor corCinza = new Cor(R.color.greyColorPicker);
+        listaCor.add(corCinza);
+        Cor corMarrom = new Cor(R.color.brownColorPicker);
+        listaCor.add(corMarrom);
+        Cor corRoxo = new Cor(R.color.purpleColorPicker);
+        listaCor.add(corRoxo);
+    }
+
     private void preencheCampos(Nota notaRecebida) {
         titulo.setText(notaRecebida.getTitulo());
         descricao.setText(notaRecebida.getDescricao());
+        layout.setBackgroundColor(ContextCompat.getColor(this,notaRecebida.getCorFundo()));
     }
 
     private void inicializaCampos() {
         titulo = findViewById(R.id.formulario_nota_titulo);
         descricao = findViewById(R.id.formulario_nota_descricao);
+        layout = findViewById(R.id.formulario_backgroud);
+        listaCor = new ArrayList<>();
         cor = new Cor();
         colorPickList = findViewById(R.id.formulario_colorpicker_recyclerview);
+        colorPickList.setAdapter(new ListaCorAdapter(this, listaCor, new ListaCorListener() {
+            @Override
+            public void onItemClick(Cor cor) {
+                FormularioNotaActivity.cor = cor;
+                layout.setBackgroundColor(ContextCompat.getColor(FormularioNotaActivity.this,cor.getCor()));
+            }
+        }));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        colorPickList.setLayoutManager(layoutManager);
 
     }
 
@@ -92,7 +138,7 @@ public class FormularioNotaActivity extends AppCompatActivity {
                     descricao.getText().toString(), cor.getCor());
         }else{
             return new Nota(titulo.getText().toString(),
-                    descricao.getText().toString());
+                    descricao.getText().toString(), new Cor().getCor());
         }
 
     }
@@ -101,7 +147,4 @@ public class FormularioNotaActivity extends AppCompatActivity {
         return item.getItemId() == R.id.menu_formulario_nota_ic_salva;
     }
 
-    public void selecionaCor(Cor cor){
-        this.cor = cor;
-    }
 }
