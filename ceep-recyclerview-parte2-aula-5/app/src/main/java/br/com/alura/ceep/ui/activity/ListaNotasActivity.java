@@ -182,8 +182,15 @@ public class ListaNotasActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if(ehMenuLayout(item)){
             changeLayout(item);
+        }else if(ehMenuFeedback(item)){
+            Intent intent = new Intent(this, FeedbackActivity.class);
+            startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private boolean ehMenuFeedback(MenuItem item) {
+        return R.id.menu_lista_nota_ic_feedback == item.getItemId();
     }
 
     private boolean ehMenuLayout(MenuItem item) {
