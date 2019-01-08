@@ -72,7 +72,7 @@ public class ListaNotasActivity extends AppCompatActivity {
     }
 
     private List<Nota> pegaTodasNotas() {
-        NotaDAO dao = new NotaDAO();
+        NotaDAO dao = new NotaDAO(getApplicationContext());
         return dao.todos();
     }
 
@@ -100,7 +100,7 @@ public class ListaNotasActivity extends AppCompatActivity {
     }
 
     private void altera(Nota nota, int posicao) {
-        new NotaDAO().altera(posicao, nota);
+        new NotaDAO(getApplicationContext()).altera(nota);
         adapter.altera(posicao, nota);
     }
 
@@ -118,9 +118,11 @@ public class ListaNotasActivity extends AppCompatActivity {
     }
 
     private void adiciona(Nota nota) {
-        new NotaDAO().insere(nota);
-        adapter.adiciona(nota);
+        new NotaDAO(getApplicationContext()).insere(nota);
+//        adapter.adiciona(nota);
+        configuraAdapter(new NotaDAO(this).todos(), listaNotas);
     }
+
 
     private boolean ehResultadoInsereNota(int requestCode, Intent data) {
         return ehCodigoRequisicaoInsereNota(requestCode) &&
@@ -147,7 +149,7 @@ public class ListaNotasActivity extends AppCompatActivity {
 
     private void configuraItemTouchHelper(RecyclerView listaNotas) {
         ItemTouchHelper itemTouchHelper =
-                new ItemTouchHelper(new NotaItemTouchHelperCallback(adapter));
+                new ItemTouchHelper(new NotaItemTouchHelperCallback(adapter, getApplicationContext()));
         itemTouchHelper.attachToRecyclerView(listaNotas);
     }
 

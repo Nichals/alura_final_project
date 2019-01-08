@@ -2,12 +2,10 @@ package br.com.alura.ceep.ui.recyclerview.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.Collections;
 import java.util.List;
@@ -58,7 +56,9 @@ public class ListaNotasAdapter extends RecyclerView.Adapter<ListaNotasAdapter.No
         notas.remove(posicao);
         notifyItemRemoved(posicao);
     }
-
+    public Nota nota(int posicao) {
+        return notas.get(posicao);
+    }
     public void troca(int posicaoInicial, int posicaoFinal) {
         Collections.swap(notas, posicaoInicial, posicaoFinal);
         notifyItemMoved(posicaoInicial, posicaoFinal);
@@ -94,10 +94,4 @@ public class ListaNotasAdapter extends RecyclerView.Adapter<ListaNotasAdapter.No
             itemView.setBackgroundColor(itemView.getResources().getColor(nota.getCorFundo()));
         }
     }
-
-    public void adiciona(Nota nota) {
-        notas.add(nota);
-        notifyDataSetChanged();
-    }
-
 }

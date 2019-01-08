@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.alura.ceep.R;
+import br.com.alura.ceep.dao.NotaDAO;
 import br.com.alura.ceep.model.Cor;
 import br.com.alura.ceep.model.Nota;
 import br.com.alura.ceep.ui.recyclerview.adapter.ListaCorAdapter;
@@ -39,6 +40,7 @@ public class FormularioNotaActivity extends AppCompatActivity {
     public static Cor cor;
     private List<Cor> listaCor;
     private ConstraintLayout layout;
+    private Nota notaRecebida;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +54,7 @@ public class FormularioNotaActivity extends AppCompatActivity {
         Intent dadosRecebidos = getIntent();
         if(dadosRecebidos.hasExtra(CHAVE_NOTA)){
             setTitle(TITULO_APPBAR_ALTERA);
-            Nota notaRecebida = (Nota) dadosRecebidos
+            notaRecebida = (Nota) dadosRecebidos
                     .getSerializableExtra(CHAVE_NOTA);
             posicaoRecibida = dadosRecebidos.getIntExtra(CHAVE_POSICAO, POSICAO_INVALIDA);
             cor = new Cor(notaRecebida.getCorFundo());
@@ -118,6 +120,13 @@ public class FormularioNotaActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if(ehMenuSalvaNota(item)){
             Nota notaCriada = criaNota();
+            List<Nota> todos = new NotaDAO(this).todos();
+            if(todos.size() > 0 && notaRecebida == null){
+                Nota ultimaNota = todos.get(todos.size()-1);
+                notaCriada.setPosicao(ultimaNota.getPosicao()+1);
+            }else if(todos != null && todos.size() == 0 && notaRecebida == null){
+                notaCriada.setPosicao(0);
+            }
             retornaNota(notaCriada);
             finish();
         }
@@ -134,8 +143,14 @@ public class FormularioNotaActivity extends AppCompatActivity {
     @NonNull
     private Nota criaNota() {
         if(cor != null){
-            return new Nota(titulo.getText().toString(),
-                    descricao.getText().toString(), cor.getCor());
+            if(notaRecebida != null){
+                return new Nota(notaRecebida.getId(),titulo.getText().toString(),
+                        descricao.getText().toString(), cor.getCor());
+            }else{
+                return new Nota( titulo.getText().toString(),
+                        descricao.getText().toString(), cor.getCor());
+            }
+
         }else{
             return new Nota(titulo.getText().toString(),
                     descricao.getText().toString(), new Cor().getCor());
